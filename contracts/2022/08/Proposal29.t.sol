@@ -119,8 +119,8 @@ contract Proposal29test is YAMTest {
         signatures[1] = "sushiToReserves(uint256)";
         calldatas[1] = abi.encode(type(uint256).max);
 
-        // Calculate amount and mint YAM - why calculate this here? Doesn't it cost gas?
-        //last pay period YAM not paid out (I think... need to check it)
+        // Calculate amount and mint YAM 
+        //existing balance of YAM in reserves is subtracted from last pay period YAM not paid out. 
         uint256 totalToMatchOld = (116647 * (10**18)) -
             IERC20(YAM).balanceOf(address(reserves));
         //YAM to be paid our for this pay period
