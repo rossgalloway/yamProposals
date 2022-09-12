@@ -57,25 +57,25 @@ contract Proposal29 {
     uint8 executeStep = 0;
 
     function execute() public {
-        // Withdraw USDC
+        // Withdraw USDC from reserves into this contract
         IERC20(address(USDC)).transferFrom(
             RESERVES,
             address(this),
             IERC20(address(USDC)).balanceOf(RESERVES)
         );
 
-        // Withdraw YAM
+        // Withdraw YAM from reserves into this contract (at this point new YAM has already been minted in the proposal)
         IERC20(address(YAM)).transferFrom(
             RESERVES,
             address(this),
             IERC20(address(YAM)).balanceOf(RESERVES)
         );
 
-        // Exit staking
+        // Exit ETH/DPI staking position and retrieve token
         ethdpiStaking._exitStaking();
         ethdpiStaking._getTokenFromHere(address(ETHDPILP));
 
-        // Withdraw to multisig
+        // Withdraw assets from this contract to multisig (INDEX, GTC, SUSHI, XSUSHI, ETHDPILP)
         withdrawToken(address(DPI), MULTISIG, IERC20(DPI).balanceOf(RESERVES));
         withdrawToken(address(GTC), MULTISIG, IERC20(GTC).balanceOf(RESERVES));
         withdrawToken(
@@ -100,7 +100,7 @@ contract Proposal29 {
         );
 
         // Comp transfers
-
+        // FOR THIS MONTH
         // E
         compSend(0x8A8acf1cEcC4ed6Fe9c408449164CE2034AdC03f, 0, 31250, 1);
         // Chilly
@@ -148,6 +148,8 @@ contract Proposal29 {
         YAMV3.burn(YAM.balanceOf(address(this)));
     }
 
+    // ---- FUNCTIONS USED IN THIS CONTRACT ----
+    
     // Function to withdraw from treasury
     function withdrawToken(
         address tokenAddress,
@@ -172,7 +174,7 @@ contract Proposal29 {
         }
     }
 
-    // Function to open steams
+    // Function to open steams (RG NOTE: I have concerns that the sablier streams will fail. Explanation is on discord.)
     function compStream(address _address, uint256 amountYAM) internal {
         if (amountYAM > 0) {
             uint256 stream = uint256(amountYAM * (10**18));
